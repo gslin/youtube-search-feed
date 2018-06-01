@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import feedgen.feed
-import html
+import lxml.html
 import requests
 import sys
 import urllib
@@ -19,6 +19,8 @@ def magic(keyword):
     feed.id(url)
     feed.link(href=url, rel='alternate')
     feed.title(title)
+
+    html = lxml.html.fromstring(r.text)
 
     # FIXME
 
