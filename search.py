@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import feedgen.feed
+import html
 import lxml.html
 import requests
 import sys
@@ -20,7 +21,36 @@ def magic(keyword):
     feed.link(href=url, rel='alternate')
     feed.title(title)
 
-    html = lxml.html.fromstring(r.text)
+    body = lxml.html.fromstring(r.text)
+
+    for item in body.cssselect('ol.item-section div.yt-lockup-video'):
+        try:
+            a = item.cssselect('a[title].spf-link')[0]
+
+            # link
+            link = a.get('href')
+            if '/' == link[0]:
+                link = 'https://www.youtube.com' + link
+
+            # img
+            link_tuple = urllib.parse.urlparse(link)
+            d = urllib.parse.parse_qs(link_tuple[4])
+            img = 'https://i.ytimg.com/vi/' + d['v'][0] + '/hqdefault.jpg'
+
+            # title
+            title = a.get('title')
+
+            # content
+            content = '%s<br/><img alt="%s" src="%s"/>' % (html.escape(title), html.escape(title), html.escape(img))
+
+            entry = feed.add_entry()
+            entry.content(content, type='xhtml')
+            entry.id(link)
+            entry.title(title)
+            entry.link(href=link)
+
+        except IndexError:
+            pass
 
     # FIXME
 
