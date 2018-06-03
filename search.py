@@ -52,8 +52,6 @@ def magic(keyword):
         except IndexError:
             pass
 
-    # FIXME
-
     print(str(feed.atom_str(), 'utf-8'))
 
 if __name__ == '__main__':
